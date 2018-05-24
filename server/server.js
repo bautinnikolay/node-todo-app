@@ -40,7 +40,25 @@ app.get('/todos/:id', (req, res) => {
     }
     res.send({todo})
   }).catch((e) => {
-    res.status(400).send
+    res.status(400).send()
+  })
+})
+
+app.delete('/todos/:id', (req, res) => {
+  if (!ObjectID.isValid(req.params.id)) {
+    return res.status(404).send()
+  }
+  Todo.findById(req.params.id).then((todo) => {
+    console.log(JSON.stringify(todo))
+    if(!todo) {
+      throw new Error({status: 400, message: 'Unable to find todo'})
+    }
+    return Todo.deleteOne({_id:req.params.id})
+  }).then((result) => {
+    res.send({result})
+  }).catch((e) => {
+    console.log(JSON.stringify(e))
+    res.status(e.status).send(e.message)
   })
 })
 
