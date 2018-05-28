@@ -48,17 +48,15 @@ app.delete('/todos/:id', (req, res) => {
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(404).send()
   }
-  Todo.findById(req.params.id).then((todo) => {
-    console.log(JSON.stringify(todo))
+  Todo.findByIdAndRemove(req.params.id).then((todo) => {
     if(!todo) {
-      throw new Error({status: 400, message: 'Unable to find todo'})
+      res.status(404).send()
+    } else {
+      res.send({todo})
     }
-    return Todo.deleteOne({_id:req.params.id})
-  }).then((result) => {
-    res.send({result})
   }).catch((e) => {
     console.log(JSON.stringify(e))
-    res.status(e.status).send(e.message)
+    res.status(400).send(e.message)
   })
 })
 
